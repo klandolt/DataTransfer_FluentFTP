@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataUpload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Protocol>FTP</Protocol>
+  <HostName>ftp.Host.ch</HostName>
+  <UserName>user@host.ch</UserName>
+  <Password>*****</Password>
+  <RemoteDirectory>/</RemoteDirectory>
+</DataUpload>
