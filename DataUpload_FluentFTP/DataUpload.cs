@@ -5,7 +5,6 @@ namespace klandolt.ch.DataTransferFluentFTP.DataUpload
 {
     /*XML Sample
      * <DataUpload>
-     *  <Protocol>FTP</Protocol>
      *  <HostName></HostName>
      *  <UserName></UserName>
      *  <Password></Password>
@@ -13,14 +12,15 @@ namespace klandolt.ch.DataTransferFluentFTP.DataUpload
      * </DataUpload>
      */
 
+    /// <summary>
+    /// DataUpload object
+    /// </summary>
     [Serializable]
     [XmlRoot("DataUpload")]
     public class DataUpload
     {
 
         #region XML Parameter
-        [XmlElement("Protocol")]
-        public string Protocol { get; set; }
         [XmlElement("HostName")]
         public string HostName { get; set; }
         [XmlElement("UserName")]
@@ -33,9 +33,8 @@ namespace klandolt.ch.DataTransferFluentFTP.DataUpload
 
         #region Constructor
 
-        public DataUpload(string paramProtocol, string paramHostName, string paramUserName, string paramPassword, string paramRemoteDirectory)
+        public DataUpload(string paramHostName, string paramUserName, string paramPassword, string paramRemoteDirectory)
         {
-            Protocol = paramProtocol;
             HostName = paramHostName;
             UserName = paramUserName;
             Password = paramPassword;

@@ -8,95 +8,78 @@ namespace klandolt.ch.DataTransferFluentFTP.DataUpload
     {
         static int Main(string[] args)
         {
-            //Create Variables & Objects
+            //Create variables & objects
             string inputPath = "";
-            DataUpload config;
             FtpClient client = new FtpClient();
-            
+
+            Console.WriteLine($"Aplikations-Verzeichnis: {System.Reflection.Assembly.GetExecutingAssembly().Location}");
+
             try
             {
-                
-                //Kontrolle Input Argumente
+                //Control input argument
                 if (args.Length == 1)
                 {
                     inputPath = args[0];
+                    Console.WriteLine($"Input Argument: {inputPath}");
                 }
-                else if (args.Length > 1 || args.Length < 1)
+                else if (args.Length > 1 )
                 {
+                    Console.WriteLine("Mehr als 1 Input Argument!");
                     throw new ArgumentException();
                 }
-                //XML Import
-                config = Tools.DeserializeFromXml();
+                else if (args.Length < 1)
+                {
+                    Console.WriteLine("Kein Argument!");
+                    throw new ArgumentNullException();
+                }
+                //XML config import
+                var config = Tools.DeserializeFromXml();
 
                 //Create FTP Client and Connect
                 client = new FtpClient(config.HostName, config.UserName, config.Password);
                 client.Connect();
 
-                //Check is a file or directory
+                //Check if is a file or directory
                 if (File.Exists(inputPath))
                 {
-                    //File exist
-                    Console.WriteLine("Datei existiert");
+                    //Is file and exist
+                    Console.WriteLine("Input ist eine Datei und existiert:");
                     var inputFile = Path.GetFileName(inputPath);
                     Console.WriteLine($"Datei hochladen: {inputPath}");
-                    client.UploadFile(inputPath, config.RemoteDirectory + inputFile, FtpExists.Overwrite, true);
+                    client.UploadFile(inputPath, config.RemoteDirectory + inputFile);
                 }
                 else if (Directory.Exists(inputPath))
                 {
-                    //Directory exist
+                    //Is directory and exist
+                    Console.WriteLine("Input ist ein Verzeichnis und existiert:");
                     var inputDirectory = new DirectoryInfo(inputPath).Name;
-                    if (!client.DirectoryExists(config.RemoteDirectory + inputDirectory))
-                    {
-                        Console.WriteLine($"Verzeichniss erstellen: {inputDirectory}");
-                        client.CreateDirectory(inputDirectory);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Verzeichnis existiert bereits: {inputDirectory}");
-                    }
-
-                    //Update RemoteBase:
+                    //Update remoteBase:
                     var remotebasePath = config.RemoteDirectory + inputDirectory + "/";
                     // Enumerate files and directories to upload
-                    var fileInfos = new DirectoryInfo(inputPath).EnumerateFileSystemInfos("*",
-                        SearchOption.AllDirectories);
-
-                    foreach (FileSystemInfo fileInfo in fileInfos)
+                    var fileInfos = new DirectoryInfo(inputPath).EnumerateFiles("*", SearchOption.AllDirectories);
+                    
+                    foreach (FileInfo fileInfo in fileInfos)
                     {
                         string remoteFilePath = Tools.TranslateLocalPathToRemote(fileInfo.FullName, inputPath,
                             remotebasePath);
-
-                        if (fileInfo.Attributes.HasFlag(FileAttributes.Directory))
-                        {
-                            // Create remote subdirectory, if it does not exist yet;
-                            if (!client.DirectoryExists(remoteFilePath))
-                            {
-                                Console.WriteLine($"Verzeichniss erstellen: {remoteFilePath}");
-                                client.CreateDirectory(remoteFilePath);
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Verzeichnis existiert bereits: {remoteFilePath}");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Datei erstellen: {remoteFilePath}");
-                            client.UploadFile(fileInfo.FullName, remoteFilePath, FtpExists.Overwrite, true);
-                        }
+                        Console.WriteLine($"Datei hochladen: {remoteFilePath}");
+                        client.UploadFile(fileInfo.FullName, remoteFilePath, FtpExists.Overwrite, true);
                     }
                 }
-                
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: {0}", e);
+                Console.WriteLine($"Error: {e}");
                 return e.HResult;
             }
             finally
             {
                 client.Disconnect();
             }
+#if DEBUG
+            Console.WriteLine("Press Enter....");
+            Console.ReadLine();
+#endif
             return 0;
         }
     }
