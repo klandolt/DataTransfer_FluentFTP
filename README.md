@@ -10,3 +10,5 @@ Die Konfigurationsparameter sind in der config.xml Datei zufinden.
 Für Datenupload Datei oder Ordner auf DataUpload.exe ziehe oder den Pfad zur Datei/Ordner als Parameter übergeben.
 
 Für Fragen stehe ich gerne zur Verfügung.
+Kontakt:
+https://github.com/klandolt/DataTransfer_FluentFTP
